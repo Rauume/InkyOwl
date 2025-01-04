@@ -1,18 +1,26 @@
-from flask import Flask
+from flask import Flask, send_from_directory, request, jsonify
+from flask_cors import CORS
 import random
 import json, os
 
 print('Booting Up Inky-Owl backend.')
 
-app = Flask(__name__, instance_relative_config =True, static_url_path='/../../client/public')
+app = Flask(__name__, instance_relative_config =True, static_url_path='/../client/static')
+# using flask-cors, since we are hosting both a front end svelte, 
+# and back end flask on different ports. https://github.com/corydolphin/flask-cors
+CORS(app) 
 
-# # Path for the main svelte page
-# @app.route("/")
-# def base():
-#     return send_from_directory('../../client/public', 'index.html')
+@app.route("/api/rand", methods=['GET'])
+def rand():
+    
+    print("Getting Random Number")
+    randomNumber = random.randint(0, 100)
 
-@app.route('/')
-def hello():
-    return 'Hello, World!'
+    response = {
+        "randomNumber": str(randomNumber), 
+        "otherRandomVariable": "Hello"
+    }
+    
+    return response
 
-app.run(debug=True, host='0.0.0.0', port=int(os.environ.get('PORT',8080)))
+app.run(debug=True, host='0.0.0.0', port=int(os.environ.get('PORT',3000)))

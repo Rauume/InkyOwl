@@ -4,15 +4,17 @@
 	"version": "0.0.1",
 	"type": "module",
 	"scripts": {
+		"sveltekit-dev": "vite dev --port 3001 --host",
 		"dev": "vite dev",
 		"build": "vite build",
 		"preview": "vite preview",
 		"check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
-		"check:watch": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch"
+		"check:watch": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch",
+		"host": "vite --host --port 3001"
 	},
 	"devDependencies": {
+		"@fontsource/fira-mono": "^5.0.0",
 		"@sveltejs/adapter-auto": "^3.0.0",
-		"@sveltejs/kit": "^2.0.0",
 		"@sveltejs/vite-plugin-svelte": "^4.0.0",
 		"svelte": "^5.0.0",
 		"svelte-check": "^4.0.0",
