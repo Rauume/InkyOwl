@@ -1,20 +1,38 @@
 # Inky Owl
 
-## A python project for raspberry pi. 
+## An e-ink photoframe for displaying your favourite photos (of owls)
 
-## Plans:
-- Display a new image at the press of a button
-	- There are 4 buttons on the inky pi screen.
-	- Buttons One and Two currently display r/superbowl and r/aww respectively
-	- Button Three displays a random image from an attached USB drive
-	- Button Four when held for 10 seconds, shuts down the pi
-- Has a function for displaying timed images
-	- Eg. Every 4 hours, display a new image from r/aww, or every 2 hours, display a new image from the attached USB drive.
-- A web backend
-	- To help with changing settings on the device.
-	- What may end up happening, is the web backend updates a config file, and reboots the program.
-	- Displays the current image on the e-ink screen, but in full resolution and uncropped.
-	- Allows uploading more photos to the usb drive??
+This project is built for the [Pimoroni Inky Impression](https://shop.pimoroni.com/products/inky-impression-4), and Raspberry Pi Zero W.
 
-Currently, this repo holds all code for an old version of the project.
-I am working on reusing what I can, and upgrading what is needed.
+This project makes use of a Python-Flask API backend, and Sveltekit frontend. The goal is to build a periodically refreshing photoframe, from various sources the user can set.
+
+## Features
+
+Web user interface:
+
+- Built in Sveltekit
+- [ ] Displays the current image on landing page
+- User can set the image source
+	- [ ] Shared Immich Gallery
+	- [ ] Reddit subreddits
+- [ ] Displays image metadata (If available)
+	- Image name
+	- Date taken
+	- Geolocation
+
+Python API/Backend:
+
+- [x] Updates the attached Pimoroni Inky Impression e-ink screen
+- [ ] Uses the 4 physical buttons to set the image source and update the screen
+- [ ] Automatically updates to a new image after a user-set amount of time (every X hours/mins)
+- [ ] Config file for setting the relevant ports and other server settings.
+
+## Getting Started
+
+Todo.
+
+To run the sveltekit development server:
+
+```bash
+npm run dev --host
+```
