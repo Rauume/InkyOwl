@@ -1,23 +1,13 @@
 // import { API_ADDRESS, CLIENT_ADDRESS } from '$env/static/private';
 
 
-export async function requestFromAPI(pathname: string) {
-    // console.log("Fetching rand from aip")
-    
-    // const response = await fetch('/api/rand');
-    // const data = await response.json();
-    console.log("getting number")
-    
+export async function requestJsonFromAPI(pathname: string) {
+    console.log("Requesting from API")
     
     const url = new URL(pathname, "http://10.0.1.114:3000/").href
     const request = new Request(url);
-    
-    
-    // console.log(request)
     const response = await fetch(request);
+    //pre-convert to json to avoid confusion elsewhere
     const data = await response.json();
-    
-    console.log("Test Number: ", data)
-    
-    return fetch(request);
+    return data;
 }

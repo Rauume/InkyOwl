@@ -4,18 +4,54 @@
     documentation
 </p> -->
 
-<script>
-  import { requestFromAPI } from "../localApiRequest.ts";
+<script lang="ts">
+  import { requestJsonFromAPI } from "../localApiRequest.ts";
+  import ButtonList from "./ButtonList.svelte";
+  
   let rand = "0";
 
   const getRand = () => {
-    // fetch("/api/rand")
-    // console.log("button pressed")
-    const randNumber = requestFromAPI("/api/rand")
-      .then((d) => d.text())
-      .then((d) => (rand = d));
+    requestJsonFromAPI("/api/rand")
+      .then((data) => (rand = data.randomNumber))
+  }
+  
+  let buttons: string[] = ["Home", "Set Image", "Gallery", "Reddit", "Options" ];
+  let selectedButton: String = buttons[0];
+  
+  function handleSelect(button: String): void
+  {
+    selectedButton = button;
   }
 </script>
 
-<h1>Your number is {rand}!</h1>
-<button on:click={getRand}>Get a random number</button>
+<main>
+  <h1>Your number is {rand}!</h1>
+  <button on:click={getRand}>Get a random number</button>
+  
+  <h1>Select a Button</h1>
+  <ButtonList
+  buttons={buttons}
+  selected={selectedButton}
+  onSelect={handleSelect}
+  />
+  
+  <p>Selected: {selectedButton || 'None'}</p>
+  
+</main>
+  
+<style>
+  main {
+    position: relative;
+    max-width: 800px;
+    margin: 0 auto;
+    min-height: 101vh;
+    padding: 1em;
+  }
+  
+  main :global(.meta){
+    color: #999;
+    font-size: 12px;
+    margin: 0 0 1em 0;
+  }
+</style>
+
