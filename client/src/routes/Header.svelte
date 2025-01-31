@@ -19,8 +19,17 @@
 			<li aria-current={$page.url.pathname === '/' ? 'page' : undefined}>
 				<a href="/">Home</a>
 			</li>
-			<li aria-current={$page.url.pathname === '/about' ? 'page' : undefined}>
-				<a href="/about">About</a>
+			<li aria-current={$page.url.pathname === '/upload_file' ? 'page' : undefined}>
+				<a href="/upload_file">Upload File</a>
+			</li>
+			<li aria-current={$page.url.pathname === '/gallery' ? 'page' : undefined}>
+				<a href="/gallery">Gallery</a>
+			</li>
+			<li aria-current={$page.url.pathname === '/recents' ? 'page' : undefined}>
+				<a href="/recents">Recents</a>
+			</li>
+			<li aria-current={$page.url.pathname === '/subreddit' ? 'page' : undefined}>
+				<a href="/subreddit">Subreddit</a>
 			</li>
 		</ul>
 		<svg viewBox="0 0 2 3" aria-hidden="true">

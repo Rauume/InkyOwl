@@ -4,6 +4,7 @@ import json
 #Handles storing data for images displayed in the frame
 class ImageData:
     
+    MAX_RECENT_IMAGES = 5
     images = []
     
     # a sub-class containing the data of idividual images.
@@ -34,7 +35,7 @@ class ImageData:
             return response
     
     @staticmethod
-    def get_currentimage():
+    def get_lastimage():
         return ImageData.images[0]
     
     # @staticmethod
@@ -45,8 +46,11 @@ class ImageData:
     def add_image(imageName, source):
         print("adding ", imageName)
         new_image = ImageData.FrameImage(imageName, source)
-        ImageData.images.append(new_image)
+        ImageData.images.insert(0, new_image)
         print("Added: ", new_image.file_name)
+        
+        if len(ImageData.images) > ImageData.MAX_RECENT_IMAGES:
+            ImageData.images.pop()
         return new_image
         
     @staticmethod

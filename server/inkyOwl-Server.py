@@ -36,7 +36,7 @@ def get_rand():
 def get_lastImage():
     print("Serving last shown image")
     # show the current image displayed on the photoframe    
-    return imageData.get_currentimage()
+    return ImageData.get_lastimage()
 
 @app.route("/last_image_file", methods=['GET'])
 def get_lastImageFile():

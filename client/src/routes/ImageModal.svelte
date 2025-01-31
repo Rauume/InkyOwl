@@ -33,7 +33,7 @@ onclick={(e) => {showModal = !showModal}}
 	</div>
 	
 	<div class="modal-image">
-		<img class="m-image" loading="lazy" src={img.url} alt="random img"/>
+		<img class="m-image" loading="lazy" src={img.url} alt="Loading"/>
 	</div>
 </div>
 {/if}

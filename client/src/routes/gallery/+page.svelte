@@ -1,5 +1,5 @@
 <script lang="ts">
-	import ImageModal from './ImageModal.svelte'
+	import ImageModal from '../ImageModal.svelte'
 	let images: any[] = []
 	let allImages: String[] = []
 	
@@ -13,17 +13,10 @@
 		console.log(list)
 	}
 </script>
-<div class="grid">
-{#await promise}
-	Loading
-	{:then _}
-	{#each images as img (img.url)}
-		<div class="grid-item">
-		<ImageModal {img}/>
-		</div>
-	{/each}
-{/await}
-</div>
+
+<header>
+    WIP
+</header>
 
 <style>
 	.grid {

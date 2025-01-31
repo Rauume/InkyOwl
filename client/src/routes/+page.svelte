@@ -1,44 +1,26 @@
-<!-- <h1>Welcome to SvelteKit</h1>
-<p>
-    Visit <a href="https://svelte.dev/docs/kit">svelte.dev/docs/kit</a> to read the
-    documentation
-</p> -->
-
+<!-- MAINPAGE  -->
 <script lang="ts">
-  import { requestJsonFromAPI } from "../localApiRequest.ts";
-  import ButtonList from "./ButtonList.svelte";
-  
-  let rand = "0";
+  import ImageModal from "./ImageModal.svelte";
+  let img: any;
+  let currentImage: string;
+  const promise = getLatestImage();
 
-  const getRand = () => {
-    requestJsonFromAPI("/api/rand")
-      .then((data) => (rand = data.randomNumber))
-  }
-  
-  let buttons: string[] = ["Home", "Set Image", "Gallery", "Reddit", "Options" ];
-  let selectedButton: String = buttons[0];
-  
-  function handleSelect(button: String): void
-  {
-    selectedButton = button;
+  async function getLatestImage() {
+    const data = await fetch(`http://10.0.1.114:3000/api/last_image`);
+    currentImage = await data.json();
+    console.log(currentImage);
   }
 </script>
 
-<main>
-  <h1>Your number is {rand}!</h1>
-  <button on:click={getRand}>Get a random number</button>
-  
-  <h1>Select a Button</h1>
-  <ButtonList
-  buttons={buttons}
-  selected={selectedButton}
-  onSelect={handleSelect}
-  />
-  
-  <p>Selected: {selectedButton || 'None'}</p>
-  
-</main>
-  
+<div class="box">
+  <!-- <img class="m-image" loading="lazy" src={currentImage.url} alt="random img" /> -->
+  {#await promise}
+    Loading
+  {:then _}
+    <ImageModal img={currentImage} />
+  {/await}
+</div>
+
 <style>
   main {
     position: relative;
@@ -47,11 +29,21 @@
     min-height: 101vh;
     padding: 1em;
   }
-  
-  main :global(.meta){
+
+  main :global(.meta) {
     color: #999;
     font-size: 12px;
     margin: 0 0 1em 0;
   }
+  
+  .box {
+    position: relative;    
+		width: 300px;
+		border: 1px solid #aaa;
+		border-radius: 2px;
+		box-shadow: 2px 2px 8px rgba(0, 0, 0, 0.1);
+		padding: 1em;
+		/* margin: 0 0 1em 0; */
+    margin: 0 auto;    
+	}
 </style>
-
