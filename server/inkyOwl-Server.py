@@ -5,6 +5,7 @@ import random
 import json, os
 
 from imageData import ImageData
+import DownloadOwl
 
 # IMAGES_FOLDER = '../client/static'
 IMAGES_FOLDER = 'uploads'
@@ -41,8 +42,8 @@ def get_lastImage():
 @app.route("/last_image_file", methods=['GET'])
 def get_lastImageFile():
     print("Serving last shown image")
-    filenames = next(walk(app.config['UPLOAD_FOLDER']), (None, None, []))[2]  # [] if no file
-    print(filenames)
+    # filenames = next(walk(app.config['UPLOAD_FOLDER']), (None, None, []))[2]  # [] if no file
+    # print(filenames)
     
     return app.send_static_file('testOwl.jpg')
 
@@ -86,8 +87,16 @@ def set_image(imageName):
 def recent_images():
     print("Returning recent images")
     return ImageData.get_imagesjson()
-    
 
+# Async, since polling data from reddit and saving the file takes longer than other functions
+@app.route("/api/get_subreddit/<subreddit>", methods=['GET'])
+async def get_subreddit(subreddit):
+    print("Getting: r/", subreddit)
+    outputFile = await DownloadOwl.DownloadLatestImage(subreddit, app.config['UPLOAD_FOLDER'])
+    ImageData.add_image(outputFile, "subreddit")
+    # subreddit = request.args.get("subreddit")
+    
+    return send_from_directory(app.config['UPLOAD_FOLDER'], outputFile)
 
 #Debug, remove later
 # ImageData.add_image("20240909_150641.jpg", "manual")
