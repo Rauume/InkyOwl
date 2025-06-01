@@ -3,9 +3,9 @@ import json
 from operator import truediv
 from typing import final
 import requests
-from imageData import ImageData
+from imageData import ImageData, ImageRequest
 
-async def DownloadLatestImage(subreddit, directory=''):
+def DownloadLatestImage(subreddit, directory=''):
     response = requests.get(''.join(['https://www.reddit.com/r/', subreddit,'/new/.json']), headers = {'User-agent': 'InkyOwl'})
     keyval = "data"
     data = response.json()
@@ -46,7 +46,6 @@ async def DownloadLatestImage(subreddit, directory=''):
             
             with open("server/uploads/" + filename, 'wb') as f:
                 f.write(response.content)
-            # outputImage = ImageData.add_image(filename, "subreddit")
             return filename
         
             

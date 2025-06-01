@@ -1,106 +1,102 @@
-from flask import Flask, send_from_directory, request, jsonify, flash, redirect, url_for
+from flask import Flask, send_from_directory, request, jsonify, flash, redirect, url_for, g, current_app
 from flask_cors import CORS
-from werkzeug.utils import secure_filename #used to prevent uploading to protected areas of the filesystem
-import random
-import json, os
+import json, os, attrs
 
-from imageData import ImageData
-import DownloadOwl
+from imageData import ImageData, ImageRequest
+from Sources import redditSource, uploadedImage, randomNumber, sourceHandler
+import frameLogic
 
-# IMAGES_FOLDER = '../client/static'
+
 IMAGES_FOLDER = 'uploads'
 STATIC_FOLDER = 'static'
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg'}
+MAX_RECENT_IMAGES = 5
 
+recent_images = []
+current_image : ImageRequest = None
+
+def create_app(config_file=None):
+    #Create and configure the app.
+    app = Flask(__name__, instance_relative_config=True, static_folder=STATIC_FOLDER, static_url_path='')
+    app.config.from_mapping(
+        SECRET_KEY = 'dev',
+        UPLOAD_FOLDER = IMAGES_FOLDER,
+        SERVER_NAME = '10.0.1.114:3000'
+    )
+
+    if config_file is None:
+        # load the instance config, if it exists, when not testing
+        app.config.from_pyfile('config.py', silent=True)
+    else:
+        # load the test config if passed in
+        app.config.from_mapping(config_file)
+
+    # ensure the instance folder exists
+    try:
+        os.makedirs(app.instance_path)
+    except OSError:
+        pass
+
+    # using flask-cors, since we are hosting both a front end svelte, 
+    # and back end flask on different ports. https://github.com/corydolphin/flask-cors
+    CORS(app) 
+    return app
 
 print('Booting Up Inky-Owl backend.')
-app = Flask(__name__, instance_relative_config =False, static_folder=STATIC_FOLDER, static_url_path='')
-app.config['UPLOAD_FOLDER'] = IMAGES_FOLDER
-# using flask-cors, since we are hosting both a front end svelte, 
-# and back end flask on different ports. https://github.com/corydolphin/flask-cors
-CORS(app) 
 
-@app.route("/api/rand", methods=['GET'])
-def get_rand():
+app = create_app()
+app.register_blueprint(redditSource.reddit_page, url_prefix='/reddit')
+app.register_blueprint(uploadedImage.upload_page, url_prefix='/upload')
+app.register_blueprint(randomNumber.random_page, url_prefix='/random')
+app.register_blueprint(sourceHandler.source_page, url_prefix='/source')
+
+@app.route("/current_image", methods=['GET'])
+def get_current_image():
+    # return the current image displayed on the photoframe
+    return jsonify(current_image.get_metadata())
+
+@app.route("/recent_images", methods=['GET'])
+def get_recent_images():
+    print("Getting recent images " + str(len(recent_images)))
+    return jsonify([image.get_metadata() for image in recent_images])
+
+@app.route("/get_new_image", methods=['GET'])
+def get_new_image():
+    print("Getting new image")
+    newImage = sourceHandler.get_new_image()
+    # frameLogic.display_image(newImage)
     
-    print("Getting Random Number")
-    randomNumber = random.randint(0, 100)
-
-    response = {
-        "randomNumber": str(randomNumber), 
-        "otherRandomVariable": "Hello"
-    }
+    if newImage is None:
+        return jsonify({"error": "No image found"}), 500
     
-    return response
+    add_new_image(newImage)
+    return "OK"
 
-@app.route("/api/last_image", methods=['GET'])
-def get_lastImage():
-    print("Serving last shown image")
-    # show the current image displayed on the photoframe    
-    return ImageData.get_lastimage()
-
-@app.route("/last_image_file", methods=['GET'])
-def get_lastImageFile():
-    print("Serving last shown image")
-    # filenames = next(walk(app.config['UPLOAD_FOLDER']), (None, None, []))[2]  # [] if no file
-    # print(filenames)
-    
-    return app.send_static_file('testOwl.jpg')
-
-def allowed_file(filename):
-    return '.' in filename and \
-           filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
-
-@app.route("/api/upload_image", methods=['POST'])
-def upload_image():
-    print("Setting image")
-    if request.method == 'POST':
-        # check if the post request has the file part
-        if 'file' not in request.files:
-            flash('No file part')
-            return redirect(request.url)
-        file = request.files['file']
-        # If the user does not select a file, the browser submits an
-        # empty file without a filename.
-        if file.filename == '':
-            flash('No selected file')
-            return redirect(request.url)
-        if file and allowed_file(file.filename):
-            filename = secure_filename(file.filename)
-            file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
-            # return redirect(url_for('download_file', name=filename))
-            addedImage = ImageData.add_image(filename, "upload_image")
-            print(addedImage.date_added)
-            return 'OK'
-        
 @app.route('/uploads/<filename>')
 def download_file(filename):
     print("Getting: ", filename)
     return send_from_directory(app.config['UPLOAD_FOLDER'], filename)
 
-@app.route("/api/set_image", methods=['GET'])
-def set_image(imageName):
-    #inkDisplay.DisplayImage(imageName)
-    print("Updating frame.")
+def add_new_image(image : ImageRequest):
+    global current_image
+    # Check if the image is already in the list
+    for recentImage in recent_images:
+        if recentImage.file_name == image.file_name:
+            print("Image already exists in recent images.")
+            return
+
+    # If the list is full, remove the oldest image
+    if len(recent_images) >= MAX_RECENT_IMAGES:
+        recent_images.pop(0)
+
+    # Add the new image to the list
+    recent_images.append(image)
+    current_image = image
+    print(f"Added new image: {image}")
     
-@app.route("/api/recent_images", methods=['GET'])
-def recent_images():
-    print("Returning recent images")
-    return ImageData.get_imagesjson()
+#Register universal add new image to the app
+app.add_new_image = add_new_image
 
-# Async, since polling data from reddit and saving the file takes longer than other functions
-@app.route("/api/get_subreddit/<subreddit>", methods=['GET'])
-async def get_subreddit(subreddit):
-    print("Getting: r/", subreddit)
-    outputFile = await DownloadOwl.DownloadLatestImage(subreddit, app.config['UPLOAD_FOLDER'])
-    ImageData.add_image(outputFile, "subreddit")
-    # subreddit = request.args.get("subreddit")
-    
-    return send_from_directory(app.config['UPLOAD_FOLDER'], outputFile)
-
-#Debug, remove later
-# ImageData.add_image("20240909_150641.jpg", "manual")
-ImageData.add_image("Great_Horned_Owl_at_twilight_Mojave_Desert.jpg", "manual")
-
-
-app.run(debug=True, host='0.0.0.0', port=int(os.environ.get('PORT',3000)))
+#Debug default Owl
+add_new_image(ImageRequest("Great_Horned_Owl_at_twilight_Mojave_Desert.jpg", "manual"))
+app.run(debug=True)
