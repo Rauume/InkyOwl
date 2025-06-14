@@ -1,10 +1,11 @@
-from flask import Flask, send_from_directory, request, jsonify, flash, redirect, url_for, g, current_app
+from flask import Flask, Response, send_from_directory, request, jsonify, flash, redirect, url_for, g, current_app, stream_with_context
 from flask_cors import CORS
-import json, os, attrs
+import json, os
 
 from imageData import ImageData, ImageRequest
 from Sources import redditSource, uploadedImage, randomNumber, sourceHandler
 import frameLogic
+from messageAnnouncer import MessageAnnouncer
 
 
 IMAGES_FOLDER = 'uploads'
@@ -14,6 +15,7 @@ MAX_RECENT_IMAGES = 5
 
 recent_images = []
 current_image : ImageRequest = None
+announcer = MessageAnnouncer()
 
 def create_app(config_file=None):
     #Create and configure the app.
@@ -77,13 +79,29 @@ def download_file(filename):
     print("Getting: ", filename)
     return send_from_directory(app.config['UPLOAD_FOLDER'], filename)
 
+
+# SSE announcing when the current_image changes.
+@app.route('/image_updates')
+def current_image_stream():
+    
+    def stream():
+        messages = announcer.listen()
+        
+        while True:
+            message = messages.get()
+            
+            yield f"data: {json.dumps(message)}\n\n"
+            
+    return Response(stream(), mimetype="text/event-stream")
+
+
 def add_new_image(image : ImageRequest):
     global current_image
     # Check if the image is already in the list
     for recentImage in recent_images:
         if recentImage.file_name == image.file_name:
-            print("Image already exists in recent images.")
-            return
+            recent_images.remove(recentImage)            
+            print("Image already exists in recent images., removing it and adding to front.")
 
     # If the list is full, remove the oldest image
     if len(recent_images) >= MAX_RECENT_IMAGES:
@@ -92,8 +110,11 @@ def add_new_image(image : ImageRequest):
     # Add the new image to the list
     recent_images.append(image)
     current_image = image
-    print(f"Added new image: {image}")
+    announcer.announce(current_image)
     
+    print(f"Added new image: {image}")
+
+
 #Register universal add new image to the app
 app.add_new_image = add_new_image
 

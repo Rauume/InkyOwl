@@ -35,7 +35,7 @@ class ImageRequest(dict):
 
 
 #Handles storing data for images displayed in the frame
-class ImageData:    
+class ImageData:
     #todo: On boot, we need to clear the uploads folder, or otherwise store the data for downloaded images.
     
     MAX_RECENT_IMAGES = 5
@@ -52,7 +52,6 @@ class ImageData:
         
         if len(ImageData.images) > ImageData.MAX_RECENT_IMAGES:
             ImageData.images.pop()
-        # return 'OK'
         
     @staticmethod
     def get_imagesjson():

@@ -10,7 +10,7 @@
         formData.append("file", selectedFile);
 
         try {
-            const response = await fetch("http://10.0.1.114:3000/api/upload_image", {
+            const response = await fetch("http://10.0.1.114:3000/upload", {
                 method: "POST",
                 body: formData,
             });
