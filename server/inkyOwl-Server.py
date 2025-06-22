@@ -41,7 +41,9 @@ def create_app(config_file=None):
 
     # using flask-cors, since we are hosting both a front end svelte, 
     # and back end flask on different ports. https://github.com/corydolphin/flask-cors
-    CORS(app) 
+    CORS(app)
+    app.config['JSON_SORT_KEYS'] = False
+    app.json.sort_keys = False
     return app
 
 print('Booting Up Inky-Owl backend.')

@@ -27,11 +27,14 @@
 	}
 
 	main {
+		margin: 40px auto;
+		max-width: 650px;
 		flex: 1;
 		display: flex;
 		flex-direction: column;
-		padding: 1rem;
-		width: 100%;
+		padding: 0 10px;
+		/* padding: 1rem; */
+		/* width: 66%; */
 		max-width: 64rem;
 		margin: 0 auto;
 		box-sizing: border-box;

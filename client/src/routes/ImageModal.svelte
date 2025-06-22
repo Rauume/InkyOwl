@@ -2,6 +2,7 @@
 	import {fade} from 'svelte/transition'
     
 	export let img
+	export let alt
 	let click;
 	let showModal = click ? true : false;
     
@@ -15,9 +16,9 @@
 
 <div class="image-wrapper">
 <!-- svelte-ignore a11y_click_events_have_key_events, a11y_no_noninteractive_element_interactions -->
-<img class="image" loading="lazy" onclick={()=>{
+<img class="image" loading="lazy" alt={alt} onclick={()=>{
 	showModal = !showModal;
-}} src={img.url} crossorigin="anonymous" alt="random img"/>
+}} src={img} crossorigin="anonymous"/>
 </div>
 
 {#if showModal}
@@ -33,7 +34,7 @@ onclick={(e) => {showModal = !showModal}}
 	</div>
 	
 	<div class="modal-image">
-		<img class="m-image" loading="lazy" src={img.url} alt="Loading"/>
+		<img class="m-image" loading="lazy" src={img} alt={alt}/>
 	</div>
 </div>
 {/if}
@@ -49,7 +50,7 @@ background:black;
 
 		width:100%;
 		height:auto;
-		max-height:500px;
+		/* max-height:500px; */
 		object-fit: scale-down;
 	}
 	.close {
@@ -64,14 +65,12 @@ background:black;
 	.image {
 		cursor: pointer;
 		width:100%;
-		max-width:400px;
-		max-height:400px;
   	transition: 0.125s;
 	}
 	
-	.image:hover {
+	/* .image:hover {
 		opacity: 0.7;
-	}
+	} */
 	
 	img:active {
 		opacity: 0.5;
@@ -80,8 +79,8 @@ background:black;
 	.modal-image {
 	  margin: auto;
   	display: block;
-  	width: 80%;
-  	max-width: 100%;	
+  	width: 100%;
+  	/* max-width: 100%;	 */
 	}
 	.modal {
   	position: fixed;

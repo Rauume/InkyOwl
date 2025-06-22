@@ -88,6 +88,30 @@ button:focus:not(:focus-visible) {
 	outline: none;
 }
 
+button {
+	background-color: #7FBBB3;
+	color: white;
+	border: none;
+	border-radius: 5px;
+	padding: 8px 15px;
+	cursor: pointer;
+	font-size: 0.9em;
+	font-weight: bold;
+	transition:
+		background-color 0.2s ease,
+		transform 0.1s ease;
+	will-change: transform;
+	transition: all background-color 0.2s ease-in-out;
+}
+
+button:hover {
+	transform: scale(1.03);
+}
+
+button:active{
+	transform: scale(0.98);        
+}
+
 @media (min-width: 720px) {
 	h1 {
 		font-size: 2.4rem;

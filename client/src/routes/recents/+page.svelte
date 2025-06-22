@@ -1,16 +1,14 @@
 <script lang="ts">
 	import ImageModal from "../ImageModal.svelte";
-	let images: any[] = [];
-	let allImages: String[] = [];
+	// import ImageResponse from "../ImageResponse";
+	let images: ImageResponse[] = [];
 
-	const promise = data();
+	const promise = getLatestImages();
 
-	async function data() {
-		const d = await fetch(`http://10.0.1.114:3000/api/recent_images`);
-		const list = await d.json();
-		allImages = [...list];
-		images = [...allImages.slice(0, 5)];
-		console.log(list);
+	async function getLatestImages() {
+		const data = await fetch(`http://10.0.1.114:3000/recent_images`);
+		images = await data.json();
+		console.log(images);
 	}
 </script>
 
@@ -18,9 +16,9 @@
 	{#await promise}
 		Loading
 	{:then _}
-		{#each images as img (img.url)}
+		{#each images as img (img)}
 			<div class="grid-item">
-				<ImageModal {img} />
+				<ImageModal img={img.url} alt={""} />
 			</div>
 		{/each}
 	{/await}
@@ -28,8 +26,15 @@
 
 <style>
 	.grid {
+		max-width: 450px;
 		display: grid;
 		grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-		grid-gap: 0.8rem;
+		grid-gap: 1.8rem;
+	}
+	.grid-item {
+		display: flex;
+		justify-content: center;
+		align-items: center;
+		max-width: 400px;
 	}
 </style>

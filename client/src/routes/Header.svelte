@@ -17,19 +17,22 @@
 		</svg>
 		<ul>
 			<li aria-current={$page.url.pathname === '/' ? 'page' : undefined}>
-				<a href="/">Home</a>
+				<a href="/">Current</a>
 			</li>
 			<li aria-current={$page.url.pathname === '/upload_file' ? 'page' : undefined}>
-				<a href="/upload_file">Upload File</a>
+				<a href="/upload_file">Upload</a>
 			</li>
 			<li aria-current={$page.url.pathname === '/gallery' ? 'page' : undefined}>
-				<a href="/gallery">Gallery</a>
+				<a href="/gallery">Immich Galleries</a>
 			</li>
 			<li aria-current={$page.url.pathname === '/recents' ? 'page' : undefined}>
 				<a href="/recents">Recents</a>
 			</li>
 			<li aria-current={$page.url.pathname === '/subreddit' ? 'page' : undefined}>
-				<a href="/subreddit">Subreddit</a>
+				<a href="/subreddit">Sub-Reddits</a>
+			</li>
+			<li aria-current={$page.url.pathname === '/sources' ? 'page' : undefined}>
+				<a href="/sources">sources</a>
 			</li>
 		</ul>
 		<svg viewBox="0 0 2 3" aria-hidden="true">
