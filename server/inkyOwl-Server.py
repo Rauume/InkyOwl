@@ -52,7 +52,7 @@ app = create_app()
 app.register_blueprint(redditSource.reddit_page, url_prefix='/reddit')
 app.register_blueprint(uploadedImage.upload_page, url_prefix='/upload')
 app.register_blueprint(randomNumber.random_page, url_prefix='/random')
-app.register_blueprint(sourceHandler.source_page, url_prefix='/source')
+app.register_blueprint(sourceHandler.source_page, url_prefix='/sources')
 
 @app.route("/current_image", methods=['GET'])
 def get_current_image():

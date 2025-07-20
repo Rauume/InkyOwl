@@ -22,8 +22,6 @@ def get_new_image():
     
     match selected_source["name"]:
         case "Reddit":
-            # Call the Reddit source function to get the image
-            # metadata = {"source": "Reddit"}
             return redditSource.get_new()
         case "Immich":
             print("Immich source not implemented yet")
